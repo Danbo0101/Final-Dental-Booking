@@ -11,6 +11,8 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
 import Typography from '@mui/material/Typography';
+import IconButton from "@mui/material/IconButton";
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -23,6 +25,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const RegimenInfo = (props) => {
   const { open, dataView } = props;
+
+  console.log(dataView)
 
   const [steps, setSteps] = useState([]);
 
@@ -87,17 +91,17 @@ const RegimenInfo = (props) => {
             <Stepper orientation="vertical" nonLinear>
               {steps.map((step) => (
                 <Step key={step.label} active>
-                  <StepLabel>{step.label}</StepLabel>
+                  <StepLabel>
+                    {step.label}
+                    <IconButton sx={{ marginLeft: 1 }} aria-label="calendar">
+                      <PostAddOutlinedIcon />
+                    </IconButton>
+                  </StepLabel>
                   <Typography sx={{ pl: 3, mt: 1 }}>{step.description}</Typography>
                 </Step>
               ))}
             </Stepper>
           </Box>
-
-
-
-
-
         </div>
       </DialogContent>
       <DialogActions>
