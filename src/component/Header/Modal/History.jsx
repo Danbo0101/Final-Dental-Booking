@@ -12,10 +12,12 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Pagination from '@mui/material/Pagination';
 import { useSelector } from 'react-redux';
 import { useEffect, useState, useRef } from 'react';
-import { deleteCancelBooking, getBookingHistory } from '../../../services/bookingService';
+import { deleteCancelBooking, getAllBookingByUserrId, puUpdateBooking } from '../../../services/bookingService';
 import { toast } from 'react-toastify';
 import LocalPrintshopOutlinedIcon from '@mui/icons-material/LocalPrintshopOutlined';
 import IconButton from '@mui/material/IconButton';
+import { getDoctorScheduleDetail, getTimeType } from '../../../services/scheduleService';
+import { getUserById } from '../../../services/userService';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -25,8 +27,6 @@ const History = (props) => {
     const { open } = props;
 
     const printRefs = useRef([]);
-
-
 
     const handleClose = () => {
         props.setOpen(false);
@@ -41,14 +41,52 @@ const History = (props) => {
     const itemsPerPage = 5;
 
     const fetchHistoryBooking = async () => {
-        let result = await getBookingHistory(id);
-        if (result.ER === 0) {
-            setListBookingHistory(result.data);
-        }
-        else {
+        let result = await getAllBookingByUserrId(id);
+        if (result.success) {
+            const bookings = result.data;
+            const times = await getTimeType();
+            const promises = bookings
+                .filter((booking) => booking.calendar_Id)
+                .map(async (booking) => {
+                    const calendarId = booking.calendar_Id;
+                    const scheduleDetail = await getDoctorScheduleDetail(calendarId);
+                    const scheduleData = scheduleDetail.data.data;
+                    let doctorInfo = { fullName: null, specialist_Name: null };
+                    if (scheduleData.doctor_Id) {
+                        const doctorDetail = await getUserById(scheduleData.doctor_Id);
+                        doctorInfo = doctorDetail.data;
+                    }
+                    const timeInfo = times.find(time => time.time_Id === scheduleData.time_Id);
+                    const time_Book = timeInfo ? timeInfo.time_Book : null;
+                    return {
+                        booking_Id: booking.booking_Id,
+                        total_Price: booking.total_Price,
+                        note: booking.note,
+                        user_Id: booking.user_Id,
+                        calendar_Id: booking.calendar_Id,
+                        rS_Id: booking.rS_Id,
+                        status_Id: booking.status_Id,
+                        status_Name: booking.status_Name,
+                        date: scheduleData.date,
+                        time_Id: scheduleData.time_Id,
+                        time_Book: time_Book,
+                        doctor_FullName: doctorInfo.fullName,
+                        specialist_Name: doctorInfo.specialist_Name,
+                    };
+                });
+
+
+            const enrichedBookings = await Promise.all(promises);
+
+            setListBookingHistory(enrichedBookings)
+            // console.log("Final enriched bookings:", enrichedBookings);
+            // return enrichedBookings;
+        } else {
             console.log(result.message);
+            return [];
         }
-    }
+    };
+
 
     useEffect(() => {
         fetchHistoryBooking();
@@ -77,127 +115,25 @@ const History = (props) => {
         const userConfirmed = window.confirm(`Bạn có chắc chắn muốn hủy lịch hẹn ngày ${booking.date} của bác sĩ ${booking.doctorName} không?`);
 
         if (userConfirmed) {
-            try {
-                let result = await deleteCancelBooking(id, booking.bookingId);
-                if (result.ER === 0) {
-                    handleClose()
-                    toast.success('Hủy lịch hẹn thành công');
-                    fetchHistoryBooking();
-                } else {
-                    toast.error('Hủy lịch hẹn thất bại');
-                }
-            } catch (error) {
-                toast.error('Đã xảy ra lỗi khi hủy lịch hẹn');
+            let dataUpdate = {
+                total_Price: booking.total_Price,
+                note: booking.note,
+                user_Id: booking.user_Id,
+                status_Id: "4",
+                calendar_Id: booking.calendar_Id,
+                rS_Id: booking.rS_Id
             }
+            let result = await puUpdateBooking(booking.booking_Id, dataUpdate);
+            if (result.success) {
+                handleClose();
+                toast.success('Hủy lịch hẹn thành công');
+                fetchHistoryBooking();
+            } else {
+                toast.error('Hủy lịch hẹn thất bại');
+            }
+
         } else {
         }
-    }
-
-    const formatToVND = (amount) => {
-
-        let amountStr = amount.toString();
-        let formattedAmount = '';
-        while (amountStr.length > 3) {
-            formattedAmount = '.' + amountStr.slice(-3) + formattedAmount;
-            amountStr = amountStr.slice(0, amountStr.length - 3);
-        }
-        formattedAmount = amountStr + formattedAmount;
-        return `${formattedAmount} VNĐ`;
-    }
-
-    const handlePrint = (printContent) => {
-        const printWindow = window.open('', '_blank');
-
-        const htmlTemplate = `
-        <html>
-        <head>
-            <title>Print</title>
-            <style>
-                @media print {
-                    body {
-                        font-family: Arial, sans-serif;
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .print-container {
-                        max-width: 100%;
-                        margin: 20px auto;
-                        padding: 20px;
-                        background-color: #fff;
-                        border-radius: 8px;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    }
-                    h2 {
-                        font-size: 24px;
-                        font-weight: 800;
-                        color: #1a202c;
-                        text-align: center;
-                        margin-bottom: 24px;
-                    }
-                    .mb-6 {
-                        margin-bottom: 24px;
-                    }
-                    .font-semibold {
-                        font-weight: 600;
-                    }
-                    .text-gray-700 {
-                        color: #4a5568;
-                    }
-                    .text-gray-600 {
-                        color: #718096;
-                    }
-                    .text-base {
-                        font-size: 16px;
-                    }
-                    .text-lg {
-                        font-size: 18px;
-                    }
-                    .block {
-                        display: block;
-                    }
-                    .mt-1 {
-                        margin-top: 8px;
-                    }
-                    table {
-                        border-collapse: collapse;
-                        width: 100%;
-                        margin-top: 1rem;
-                    }
-                    th, td {
-                        border: 1px solid #ddd;
-                        padding: 8px;
-                        text-align: left;
-                    }
-                    th {
-                        background-color: #f9f9f9;
-                    }
-                    .text-center {
-                        text-align: center !important;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="print-container">
-                ${printContent}
-            </div>
-        </body>
-        </html>
-    `;
-
-        printWindow.document.open();
-        printWindow.document.write(htmlTemplate);
-        printWindow.document.close();
-
-        printWindow.onload = () => {
-            printWindow.print();
-            printWindow.close();
-        };
-    };
-
-
-    if (!printRefs.current.length) {
-        printRefs.current = sortedData.map(() => React.createRef());
     }
 
 
@@ -228,9 +164,6 @@ const History = (props) => {
                             </TableCell>
                             <TableCell align="center">Tên bác sĩ</TableCell>
                             <TableCell align="center">Chuyên khoa khám</TableCell>
-                            <TableCell align="center">Tên phòng khám</TableCell>
-                            <TableCell align="center">Địa chỉ phòng khám</TableCell>
-                            <TableCell align="center">Trạng thái lịch hẹn</TableCell>
                             <TableCell align="center">Trạng thái lịch hẹn</TableCell>
                         </TableRow>
                     </TableHead>
@@ -243,84 +176,17 @@ const History = (props) => {
                                 <TableCell component="th" scope="row">
                                     {index + 1}
                                 </TableCell>
-                                <TableCell align="center">{booking.timeTypeName}</TableCell>
+                                <TableCell align="center">{booking.time_Book}</TableCell>
                                 <TableCell align="center">{booking.date}</TableCell>
-                                <TableCell align="center">{booking.doctorName}</TableCell>
-                                <TableCell align="center">{booking.specialtiesName}</TableCell>
-                                <TableCell align="center">{booking.clinicName}</TableCell>
-                                <TableCell align="center">{booking.clinicAddress}</TableCell>
+                                <TableCell align="center">{booking.doctor_FullName}</TableCell>
+                                <TableCell align="center">{booking.specialist_Name}</TableCell>
                                 <TableCell align="center">
                                     <Button
-                                        disabled={new Date() > new Date(booking.date.split('/').reverse().join('-')) || booking.statusName === "Bị huỷ" || booking.statusName === "Đã hủy" || booking.statusName === "Đã thanh toán"}
+                                        disabled={new Date() > new Date(booking.date.split('/').reverse().join('-')) || booking.status_Id === "4"}
                                         onClick={() => hanldeCancelBooking(booking)}
                                     >
-                                        {booking.statusName}
+                                        {booking.status_Name}
                                     </Button>
-                                </TableCell>
-                                <TableCell align="center">
-                                    <IconButton
-                                        onClick={() => handlePrint(printRefs.current[index].current.innerHTML)}
-                                        className="text-blue-500 hover:text-blue-700"
-                                        disabled={new Date() > new Date(booking.date.split('/').reverse().join('-')) || booking.statusName === "Bị huỷ" || booking.statusName === "Đã hủy"}
-                                    >
-                                        <LocalPrintshopOutlinedIcon />
-                                    </IconButton>
-                                    <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-8 mt-4"
-                                        ref={printRefs.current[index]}
-                                        hidden
-                                    >
-                                        <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-800">Hoá Đơn Dịch Vụ Khám Bệnh</h2>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Ca khám bệnh:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.timeTypeName}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Ngày đặt lịch:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.date}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Tên bác sĩ:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.doctorName}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Chuyên khoa khám:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.specialtiesName}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Tên phòng khám:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.clinicName}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Địa chỉ phòng khám:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.clinicAddress}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Phí dịch vụ:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{formatToVND(booking.cosultatioFee)}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Phí đặt lịch:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.bookingFee === "Chưa thanh toán" ? "Chưa thanh toán" : formatToVND(booking.bookingFee)}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Tổng phí đã thanh toán:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{formatToVND(booking.feePaid)}</span>
-                                        </div>
-
-                                        <div className="mb-6">
-                                            <label className="block font-semibold text-gray-700 text-lg">Ngày thanh toán:</label>
-                                            <span className="block mt-1 text-gray-600 text-base">{booking.dateFee}</span>
-                                        </div>
-                                    </div>
                                 </TableCell>
 
                             </TableRow>

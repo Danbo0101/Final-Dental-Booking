@@ -5,6 +5,8 @@ import Grid from '@mui/material/Grid2';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const Item = styled(Paper)(({ theme }) => ({
     display: 'flex',
@@ -27,9 +29,10 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const SpecialtiesDoctor = (props) => {
 
-    const navigate = useNavigate()
-
     const { listDoctor } = props;
+
+    const navigate = useNavigate();
+    const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
@@ -37,7 +40,15 @@ const SpecialtiesDoctor = (props) => {
     const pageCount = Math.ceil(listDoctor.length / itemsPerPage);
     const currentData = listDoctor.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-    // console.log(currentData)
+    const handleNavigate = (doctorId) => {
+        if (isAuthenticated) {
+            navigate(`/doctor-info/${doctorId}`);
+        }
+        else {
+            navigate("/login");
+            toast.warn("Vui lòng đăng nhập trước khi đặt lịch")
+        }
+    }
 
     return (
         <>
@@ -53,7 +64,7 @@ const SpecialtiesDoctor = (props) => {
                             currentData.map((doctor, index) => {
                                 return (
                                     <Grid size={6}>
-                                        <Item onClick={() => navigate(`/doctor-info/${doctor.user_Id}`)}>
+                                        <Item onClick={() => handleNavigate(doctor.user_Id)}>
                                             <img
                                                 src={`data:image/jpeg;base64,${doctor.image}`}
                                                 className="w-24 h-24 rounded-full mx-5"

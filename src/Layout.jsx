@@ -32,6 +32,7 @@ const NotFound = () => {
 const Layout = () => {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
 
+
   return (
     <Suspense fallback="...is loading">
       <Routes>
@@ -46,7 +47,7 @@ const Layout = () => {
         </Route>
         <Route
           path="admin"
-          // element={<PrivateRoute allowedRoles={[1]} />}
+          element={<PrivateRoute allowedRoles={['admin']} />}
         >
           <Route element={<Admin />}>
             <Route path="profile-admin" element={<ProfileAdmin />} />
@@ -58,7 +59,7 @@ const Layout = () => {
         </Route>
         <Route
           path="doctor"
-          // element={<PrivateRoute allowedRoles={[2]} />}
+          element={<PrivateRoute allowedRoles={['doctor']} />}
         >
           <Route element={<HomeDoctor />}>
             <Route index element={<Appointment />} />

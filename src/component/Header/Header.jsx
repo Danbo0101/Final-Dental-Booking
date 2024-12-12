@@ -12,7 +12,11 @@ import Menu from '@mui/material/Menu';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { doLogout } from "../../redux/action/userAction";
+import noImage from "../../assets/images/No_Image_Available.jpg"
+import { useState } from "react";
+import History from "./Modal/History";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -60,10 +64,19 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Header = (props) => {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const image = useSelector((state) => state.user.image);
 
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const [openHistory, setOpenHistory] = useState(null);
+
+  const handleLogout = () => {
+    dispatch(doLogout());
+    navigate("/login");
+  }
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -99,7 +112,11 @@ const Header = (props) => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                {image ?
+                  <Avatar alt="image" src={`data:image/jpeg;base64,${image}`} />
+                  :
+                  <Avatar alt="image" src={noImage} />
+                }
               </IconButton>
             </Tooltip>
             <Menu
@@ -118,13 +135,10 @@ const Header = (props) => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem key="History Booking">
+              <MenuItem key="History Booking" onClick={() => setOpenHistory(true)}>
                 <Typography sx={{ textAlign: 'center', fontSize: "14px", fontFamily: "sans-serif" }}>Lịch sử đặt hẹn</Typography>
               </MenuItem>
-              <MenuItem key="Profile">
-                <Typography sx={{ textAlign: 'center', fontSize: "14px", fontFamily: "sans-serif" }}>Thông tin cá nhân</Typography>
-              </MenuItem>
-              <MenuItem key="Logout">
+              <MenuItem key="Logout" onClick={() => handleLogout()}>
                 <Typography sx={{ textAlign: 'center', fontSize: "14px", fontFamily: "sans-serif" }}>Đăng xuất</Typography>
               </MenuItem>
             </Menu>
@@ -167,6 +181,12 @@ const Header = (props) => {
           </div>
         }
       </div>
+
+
+      <History
+        open={openHistory}
+        setOpen={setOpenHistory}
+      />
     </div>
   );
 };

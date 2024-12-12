@@ -65,6 +65,14 @@ const getBookingByCalendarId = (calendar_Id) => {
     return axios.get(`/api/Booking/get-all-by-calendar-id/${calendar_Id}`);
 }
 
+const getAllBookingByUserrId = (user_Id) => {
+    return axios.get(`/api/Booking/get-all-by-user-id/${user_Id}`);
+}
+
+const puUpdateBooking = (booking_Id, data) => {
+    return axios.put(`/api/Booking/update/${booking_Id}`, data);
+}
+
 export {
     getBookingToConfirm,
     postBooking,
@@ -78,5 +86,7 @@ export {
     checkTimeBooking,
     checkDoctorBooking,
     postCreateBooking,
-    getBookingByCalendarId
+    getBookingByCalendarId,
+    getAllBookingByUserrId,
+    puUpdateBooking
 }

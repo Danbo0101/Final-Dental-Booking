@@ -24,6 +24,7 @@ import { useSelector } from 'react-redux';
 import { getListDoctorSchedule } from '../../../services/scheduleService';
 import CreateDoctorSchedule from './Modal/CreateDoctorSchedule';
 import ViewDoctorSchedule from './Modal/ViewDoctorSchedule';
+import { getBookingByCalendarId } from '../../../services/bookingService';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -63,8 +64,17 @@ const Appointment = (props) => {
         let formattedDate = dateSelected.format('YYYY-MM-DD');
         let result = await getListDoctorSchedule(doctorId, formattedDate);
         if (result.success) {
-            setListSchedule(result.data);
-            return
+            const updatedSchedule = await Promise.all(result.data.map(async (schedule) => {
+                const bookings = await getBookingByCalendarId(schedule.calendar_Id);
+
+                const countBooking = bookings.data.filter(booking => booking.status_Id === '7').length;
+                return {
+                    ...schedule,
+                    countBooking: countBooking
+                };
+            }));
+
+            setListSchedule(updatedSchedule);
         }
         else {
             setListSchedule([]);
@@ -122,6 +132,7 @@ const Appointment = (props) => {
                             <TableRow>
                                 <StyledTableCell align='center'>ID</StyledTableCell>
                                 <StyledTableCell align="center">Ca làm</StyledTableCell>
+                                <StyledTableCell align="center">Số lượng khách hàng đã đặt</StyledTableCell>
                                 <StyledTableCell align="center">Số lượng tối đa</StyledTableCell>
                                 <StyledTableCell align="center"></StyledTableCell>
                             </TableRow>
@@ -138,6 +149,7 @@ const Appointment = (props) => {
                                                 {index}
                                             </StyledTableCell>
                                             <StyledTableCell align="center">{schedule.time_Booking}</StyledTableCell>
+                                            <StyledTableCell align="center">{schedule.countBooking}</StyledTableCell>
                                             <StyledTableCell align="center">{schedule.max_Customer}</StyledTableCell>
                                             <StyledTableCell align="center">
                                                 <IconButton

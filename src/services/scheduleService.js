@@ -13,9 +13,15 @@ const postCreateListDoctorSchedule = (doctorId, data) => {
     return axios.post(`/api/Calendar/create-list-calendar-by-doctor-id/${doctorId}`, data);
 }
 
+const getDoctorScheduleDetail = (id) => {
+    return axios.get(`/api/Calendar/get/${id}`);
+}
+
 const getDoctorScheduleBooking = (date, doctorId) => {
     return axios.get(`/v1/api/schedules-booking?date=${date}&doctorId=${doctorId}`);
 }
+
+
 
 
 
@@ -26,9 +32,7 @@ const putUpdateDoctorSchedule = (id, statusId, maxNumber) => {
     return axios.put(`/v1/api/schedules?scheduleId=${id}`, data);
 }
 
-const getDoctorScheduleDetail = (id) => {
-    return axios.get(`/v1/api/schedules-detail?scheduleId=${id}`);
-}
+
 
 const getTimeType = () => {
     return axios.get(`/api/Calendar/get-all-defaul-time`);
