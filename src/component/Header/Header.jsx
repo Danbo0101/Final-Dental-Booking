@@ -164,7 +164,7 @@ const Header = (props) => {
             </Button>
             <Button
               variant="outlined"
-              href="#outlined-buttons"
+              href="/register"
               sx={{
                 color: "white",
                 fontSize: "14px",

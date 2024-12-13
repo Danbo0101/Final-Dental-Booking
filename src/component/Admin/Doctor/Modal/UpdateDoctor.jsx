@@ -219,7 +219,7 @@ const UpdateDoctor = (props) => {
               </option>
             )}
           </select>
-          <input
+          {/* <input
             className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             type="text"
             placeholder="Tên Đăng Nhập"
@@ -232,7 +232,7 @@ const UpdateDoctor = (props) => {
             placeholder="Mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-          />
+          /> */}
           <div className="flex gap-2">
             <input
               type="date"

@@ -5,6 +5,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import { formatCurrencyVND } from "../../../../utils/general";
+import noImage from "../../../../assets/images/No_Image_Available.jpg"
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -68,7 +69,14 @@ const ServiceInfo = (props) => {
                 disabled
               />
               <div className="w-full flex justify-center">
-                <img src={`data:image/jpeg;base64,${dataView.image}`} className="w-52 h-48" />
+                <img
+                  src={
+                    dataView.image
+                      ? `data:image/jpeg;base64,${dataView.image}`
+                      : noImage
+                  }
+                  className="w-52 h-48"
+                />
               </div>
             </div>
           </DialogContent>

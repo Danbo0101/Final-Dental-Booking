@@ -60,27 +60,28 @@ const Appointment = (props) => {
     const [listSchedule, setListSchedule] = useState([])
 
     const fetchDoctorSchedule = async () => {
-
         let formattedDate = dateSelected.format('YYYY-MM-DD');
         let result = await getListDoctorSchedule(doctorId, formattedDate);
+
         if (result.success) {
             const updatedSchedule = await Promise.all(result.data.map(async (schedule) => {
                 const bookings = await getBookingByCalendarId(schedule.calendar_Id);
 
-                const countBooking = bookings.data.filter(booking => booking.status_Id === '7').length;
+                const countBooking = bookings?.data?.filter(booking => booking.status_Id === '7').length || 0;
+
                 return {
                     ...schedule,
-                    countBooking: countBooking
+                    countBooking
                 };
             }));
 
             setListSchedule(updatedSchedule);
-        }
-        else {
+        } else {
             setListSchedule([]);
             console.log(result.message);
         }
-    }
+    };
+
 
     useEffect(() => {
         fetchDoctorSchedule();

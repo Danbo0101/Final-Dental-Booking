@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { postUpdateAssignServices } from "../../../../services/specialtiesService";
 import { toast } from "react-toastify";
+import noImage from "../../../../assets/images/No_Image_Available.jpg"
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -195,7 +196,11 @@ const SpecialtiesInfo = (props) => {
               />
               <div className="w-full flex justify-center">
                 <img
-                  src={`data:image/jpeg;base64,${dataView.image}`}
+                  src={
+                    dataView.image
+                      ? `data:image/jpeg;base64,${dataView.image}`
+                      : noImage
+                  }
                   className="w-52 h-48"
                 />
               </div>

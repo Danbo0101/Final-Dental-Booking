@@ -49,7 +49,7 @@ const DeleteService = (props) => {
           onClose={handleClose}
           aria-describedby="alert-dialog-slide-description"
         >
-          <DialogTitle>{`Vui lòng xác nhận xóa chuyên khoa ${dataDelete.name}?`}</DialogTitle>
+          <DialogTitle>{`Vui lòng xác nhận dịch vụ ${dataDelete.name}?`}</DialogTitle>
           <DialogActions>
             <Button onClick={resetData} variant="outlined" color="error">
               Không

@@ -82,20 +82,20 @@ const DoctorInfo = (props) => {
               ) : (
                 <></>
               )}
-              <input
+              {/* <input
                 className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                 type="text"
                 placeholder="UserName"
                 value={doctor.username}
                 disabled
-              />
-              <input
+              /> */}
+              {/* <input
                 className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                 type="text"
                 placeholder="Password"
                 value={doctor.password}
                 disabled
-              />
+              /> */}
               <div className="flex gap-2">
                 <input
                   type="date"
