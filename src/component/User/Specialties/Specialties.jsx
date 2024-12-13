@@ -68,7 +68,7 @@ const ListSpecialties = (props) => {
         <div className="flex justify-center items-center w-14 h-14 rounded-full bg-sky-300 drop-shadow">
           <img src={imgtest} alt="icon" className="w-8 h-8" />
         </div>
-        <div className="font-serif font-semibold text-xl mt-4">
+        <div className="text-center font-serif font-semibold text-xl mt-4">
           {specialty.name}
         </div>
         <div className="text-center font-extralight text-sm mt-2">
