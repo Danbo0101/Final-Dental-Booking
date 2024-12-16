@@ -20,7 +20,7 @@ import { getListDoctorSchedule, getTimeDoctorSchedule } from '../../../../servic
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { convertTo12HourFormat } from '../../../../utils/general';
-import { postCreateBookingByRegimenId } from '../../../../services/bookingService';
+import { postCreateBookingByDoctor } from '../../../../services/bookingService';
 import { toast } from 'react-toastify';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -119,18 +119,18 @@ const CreateAppointment = (props) => {
             service_Id: dataCreateAppt.service_Id
         }]
 
-        console.log(dataCreate)
-        console.log(dataCreateAppt)
+        // console.log(dataCreate)
+        // console.log(dataCreateAppt)
 
-        // let result = await postCreateBookingByRegimenId(dataCreateAppt.regimen_Id, dataCreate)
-        // if (result.success) {
-        //     toast.success("Đặt lịch thành công");
-        //     props.fetchRegimenByUser();
-        //     resetData();
-        // }
-        // else {
-        //     toast.error(result.message);
-        // }
+        let result = await postCreateBookingByDoctor(0, dataCreateAppt.description, dataCreateAppt.user_Id, 7, calendarId, dataCreateAppt.rS_Id, dataCreateAppt.service_Id)
+        if (result.success) {
+            toast.success("Đặt lịch thành công");
+            props.fetchRegimenByUser();
+            resetData();
+        }
+        else {
+            toast.error(result.message);
+        }
     }
 
 

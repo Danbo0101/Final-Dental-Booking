@@ -21,8 +21,15 @@ const puUpdateBooking = (booking_Id, data) => {
     return axios.put(`/api/Booking/update/${booking_Id}`, data);
 }
 
-const postCreateBookingByRegimenId = (regimen_Id, data) => {
-    return axios.post(`/api/Booking/create-by-regimen-id/${regimen_Id}`, data);
+const postCreateBookingByDoctor = (total_Price, note, user_Id, status_Id, calendar_Id, rS_Id) => {
+    const data = new FormData();
+    data.append("total_Price", total_Price);
+    data.append("note", note);
+    data.append("user_Id", user_Id);
+    data.append("status_Id", status_Id);
+    data.append("calendar_Id", calendar_Id);
+    data.append("rS_Id", rS_Id);
+    return axios.post(`/api/Booking/create`, data);
 }
 
 export {
@@ -30,5 +37,5 @@ export {
     getBookingByCalendarId,
     getAllBookingByUserrId,
     puUpdateBooking,
-    postCreateBookingByRegimenId
+    postCreateBookingByDoctor
 }
