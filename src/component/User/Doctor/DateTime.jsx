@@ -102,6 +102,7 @@ const DateTime = (props) => {
                         }}
                         defaultValue={dayjs()}
                         orientation="landscape"
+                        minDate={dayjs()}
                     />
                 </Box>
             </LocalizationProvider>

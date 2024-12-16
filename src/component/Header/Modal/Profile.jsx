@@ -21,11 +21,6 @@ const Profile = (props) => {
 
     const account = useSelector(state => state.user.account);
 
-    const bufferToDataURL = (buffer) => {
-        const blob = new Blob([new Uint8Array(buffer.data)], { type: 'image/jpeg' });
-        const url = URL.createObjectURL(blob);
-        return url;
-    }
 
     return (
         <Dialog

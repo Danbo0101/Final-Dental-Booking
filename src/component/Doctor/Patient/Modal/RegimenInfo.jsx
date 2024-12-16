@@ -13,6 +13,8 @@ import StepContent from '@mui/material/StepContent';
 import Typography from '@mui/material/Typography';
 import IconButton from "@mui/material/IconButton";
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
+import { getAllBookingByUserrId } from "../../../../services/bookingService";
+import { sortByStep } from "../../../../utils/general";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -24,21 +26,60 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const RegimenInfo = (props) => {
-  const { open, dataView } = props;
+  const { open, dataView, selectedUser } = props;
 
-  console.log(dataView)
+  // console.log(dataView)
+  // console.log(selectedUser)
 
   const [steps, setSteps] = useState([]);
+  const [regimentDetail, setRegimenDDetail] = useState([]);
+
+  const fetchBookingByUser = async () => {
+    let result = await getAllBookingByUserrId(selectedUser);
+    if (result.success) {
+      if (dataView && dataView.regimen_Services) {
+        const rS_Ids = dataView.regimen_Services.map((service) => service.rS_Id);
+
+        const updatedResult = result.data.map((item) => ({
+          ...item,
+          isBooking: rS_Ids.includes(item.rS_Id),
+        }));
+        setRegimenDDetail(updatedResult);
+      }
+    }
+    else {
+      console.log(result.message);
+    }
+  };
 
   useEffect(() => {
-    if (dataView) {
-      const newSteps = dataView.regimen_Services.map((service) => ({
+    fetchBookingByUser();
+  }, [dataView, open]);
+
+  useEffect(() => {
+    if (dataView && regimentDetail.length > 0) {
+      const bookingMap = regimentDetail.reduce((acc, item) => {
+        acc[item.rS_Id] = item.isBooking;
+        return acc;
+      }, {});
+
+      console.log(regimentDetail);
+
+      const reversedServices = sortByStep(dataView.regimen_Services);
+
+      const newSteps = reversedServices.map((service) => ({
         label: service.service_Name,
         description: service.note,
+        isBooking: bookingMap[service.rS_Id] || false,
+        rS_Id: service.rS_Id,
+        regimen_Id: service.regimen_Id,
+        service_Id: service.service_Id,
+        user_Id: selectedUser
       }));
       setSteps(newSteps);
     }
-  }, [dataView, open]);
+  }, [regimentDetail, dataView]);
+
 
   const handleClose = () => {
     if (reason !== "backdropClick") {
@@ -50,6 +91,12 @@ const RegimenInfo = (props) => {
     props.setDataView("");
     props.setOpen(false);
   };
+
+  const handleOpenCreateAppt = (data) => {
+    props.setOpenCreateAppt(true);
+    props.setDataCreateAppt(data);
+    resetData();
+  }
   return (
     <BootstrapDialog
       onClose={handleClose}
@@ -94,7 +141,14 @@ const RegimenInfo = (props) => {
                   <StepLabel>
                     {step.label}
                     <IconButton sx={{ marginLeft: 1 }} aria-label="calendar">
-                      <PostAddOutlinedIcon />
+                      {step.isBooking ?
+                        <></>
+                        :
+                        <PostAddOutlinedIcon
+                          onClick={() => handleOpenCreateAppt(step)}
+                        />
+                      }
+
                     </IconButton>
                   </StepLabel>
                   <Typography sx={{ pl: 3, mt: 1 }}>{step.description}</Typography>

@@ -153,6 +153,7 @@ const DoctorInfo = (props) => {
         return;
       }
       else {
+        setActiveStep(0);
         toast.error(result.message);
       }
 

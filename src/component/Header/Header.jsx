@@ -99,7 +99,7 @@ const Header = (props) => {
         <img src={logo} className="w-36 h-16" />
       </div>
       <div className="flex gap-32 mr-10">
-        <Search>
+        {/* <Search>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
@@ -107,7 +107,7 @@ const Header = (props) => {
             placeholder="Search…"
             inputProps={{ "aria-label": "search" }}
           />
-        </Search>
+        </Search> */}
         {isAuthenticated ?
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">

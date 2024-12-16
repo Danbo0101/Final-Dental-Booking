@@ -16,12 +16,12 @@ const App = () => {
                 <Sidebar>
                     <SidebarItem icon={<MasksOutlinedIcon size={20} />} text="Quản lý bác sĩ" to='/admin' />
                     <SidebarItem icon={<VaccinesOutlinedIcon size={20} />} text="Quản lý chuyên khoa" to="specialties" />
-                    <SidebarItem icon={<MedicalServicesOutlinedIcon size={20} />} text="Quản lý dịch vụ" to="services" /> 
+                    <SidebarItem icon={<MedicalServicesOutlinedIcon size={20} />} text="Quản lý dịch vụ" to="services" />
                     <hr className="my-3 border-t-2" />
-                    <SidebarItem icon={<SettingsOutlinedIcon size={20} />} text="Settings" >
+                    {/* <SidebarItem icon={<SettingsOutlinedIcon size={20} />} text="Settings" >
                         <SidebarItem icon={<AccountBoxOutlinedIcon size={16} />} text="Profile" to='profile-admin' />
                         <SidebarItem icon={<VpnKeyOutlinedIcon size={16} />} text="Change Password" to="change-password" />
-                    </SidebarItem>
+                    </SidebarItem> */}
                 </Sidebar>
             </div>
             <Outlet />

@@ -22,6 +22,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import UpdateOutlinedIcon from '@mui/icons-material/UpdateOutlined';
 import RegimenInfo from './Modal/RegimenInfo';
 import UpdateRegimen from './Modal/UpdateRegimen';
+import CreateAppointment from './Modal/CreateAppointment';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -63,6 +64,9 @@ const Patient = () => {
 
     const [openUpdate, setOpenUpdate] = useState(false);
     const [dataUpdate, setDataUpdate] = useState();
+
+    const [openCreateAppt, setOpenCreateAppt] = useState(false);
+    const [dataCreateAppt, setDataCreateAppt] = useState();
 
     const pageCount = Math.ceil(listRegimen.length / itemsPerPage);
     const currentData = listRegimen.slice(
@@ -127,6 +131,8 @@ const Patient = () => {
         setOpenUpdate(true);
     }
 
+    // console.log(openCreateAppt)
+    // console.log(dataCreateAppt)
     return (
         <div className="flex flex-col w-full h-full py-10 px-16">
             <div className='flex justify-between items-center text-2xl font-semibold pb-5'>
@@ -219,12 +225,22 @@ const Patient = () => {
                 setOpen={setOpenView}
                 dataView={dataView}
                 setDataView={setDataView}
+                selectedUser={selectedUser}
+                setOpenCreateAppt={setOpenCreateAppt}
+                setDataCreateAppt={setDataCreateAppt}
             />
             <UpdateRegimen
                 open={openUpdate}
                 setOpen={setOpenUpdate}
                 dataUpdate={dataUpdate}
                 setDataUpdate={setDataUpdate}
+                fetchRegimenByUser={fetchRegimenByUser}
+            />
+            <CreateAppointment
+                open={openCreateAppt}
+                setOpen={setOpenCreateAppt}
+                dataCreateAppt={dataCreateAppt}
+                setDataCreateAppt={setDataCreateAppt}
                 fetchRegimenByUser={fetchRegimenByUser}
             />
         </div>

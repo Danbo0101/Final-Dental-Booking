@@ -38,14 +38,18 @@ const Setting = (props) => {
     };
 
     const account = useSelector(state => state.user.account);
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [address, setAddress] = useState("");
-    const [gender, setGender] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [idNumber, setIdNumber] = useState("");
     const [phone, setPhone] = useState("");
+    const [email, setEmail] = useState("");
+    const [gender, setGender] = useState("");
+    const [birthday, setBirthday] = useState("");
     const [image, setImage] = useState("");
     const [nameImage, setNameImage] = useState("")
     const [previewImage, setPreviewImage] = useState("");
+    const [userName, setUserName] = useState("");
+    const [roleId, setRoleId] = useState("X8SYcASgxE");
+    const [specialistId, setSpecialistId] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -53,24 +57,24 @@ const Setting = (props) => {
     useEffect(() => {
         async function fetchData() {
             if (account) {
-                setName(account.name);
-                setEmail(account.email);
-                setAddress(account.address);
-                setGender(account.gender);
-                setPhone(account.phone);
-                setImage(account.image);
-                const url = await bufferToDataURL(account.image);
-                setPreviewImage(url);
+                setFullName(account.fullName)
+                setIdNumber(account.id_Number)
+                setPhone(account.phone)
+                setEmail(account.email)
+                setGender(account.gender)
+                setBirthday(account.birthday)
+                setImage(account.image)
+                setUserName(account.userName)
             }
         }
         fetchData();
     }, [])
 
-    const bufferToDataURL = (buffer) => {
-        const blob = new Blob([new Uint8Array(buffer.data)], { type: 'image/jpeg' });
-        const url = URL.createObjectURL(blob);
-        return url;
-    }
+    // const bufferToDataURL = (buffer) => {
+    //     const blob = new Blob([new Uint8Array(buffer.data)], { type: 'image/jpeg' });
+    //     const url = URL.createObjectURL(blob);
+    //     return url;
+    // }
     const handleUploadImage = (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
             setNameImage(event.target.files[0].name);
@@ -192,22 +196,22 @@ const Setting = (props) => {
                                     className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                                     type="text"
                                     placeholder="Tên"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
                                 />
                                 <input
                                     className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                                     type="email"
                                     placeholder="Email"
                                     value={email}
-                                    disabled
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                                 <input
                                     className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                                     type="text"
-                                    placeholder="Địa chỉ"
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder="Căn cước công dân"
+                                    value={idNumber}
+                                    onChange={(e) => setIdNumber(e.target.value)}
                                 />
                                 <div className="flex gap-2">
                                     <select

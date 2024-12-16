@@ -23,6 +23,7 @@ import InputLabel from "@mui/material/InputLabel";
 import { getServices } from "../../../../services/specialtiesService";
 import { postUpdateRegimen } from "../../../../services/regimen";
 import { toast } from "react-toastify";
+import { sortByStep } from "../../../../utils/general";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -78,7 +79,8 @@ const UpdateRegimen = (props) => {
 
   useEffect(() => {
     if (dataUpdate) {
-      const initialSteps = dataUpdate.regimen_Services.map((service, index) => ({
+      const reversedServices = sortByStep(dataUpdate.regimen_Services);
+      const initialSteps = reversedServices.map((service, index) => ({
         label: service.service_Name,
         description: service.note,
         service_Id: service.service_Id,
@@ -151,7 +153,8 @@ const UpdateRegimen = (props) => {
       service_Id: service.service_Id,
       note: service.description
     }));
-    // setSubmittedSteps(transformedData);
+
+    // console.log(transformedData)
 
     let result = await postUpdateRegimen(dataUpdate.regimen_Id, transformedData);
     if (result.success) {
